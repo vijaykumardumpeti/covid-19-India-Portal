@@ -1,0 +1,72 @@
+
+### register 
+POST http://localhost:3000/users/
+Content-Type: application/json
+
+{   
+    "username":"christopher_phillips",
+    "name":"rahul",
+    "password": "christy@123",
+    "gender": "Male",
+    "location":"hyderabad"
+}
+
+
+### login,  problem is not getting JWT-Token
+POST http://localhost:3000/login/
+Content-Type: application/json
+
+{
+    "username": "christopher_phillips",
+    "password": "christy@123"
+}
+
+###API-2 GET 
+GET http://localhost:3000/states/
+Authorization: Bearer 
+
+###API-3 GET 
+GET http://localhost:3000/states/8/
+Authorization: Bearer 
+
+###API-4 POST 
+POST http://localhost:3000/districts/
+Authorization: Bearer
+Content-Type: application/json
+
+{
+    "districtName": "Bagalkot",
+    "stateId": 3,
+    "cases": 2323,
+    "cured": 2000,
+    "active": 315,
+    "deaths": 8
+}
+
+###API-5 GET 
+GET http://localhost:3000/districts/322/
+Authorization: Bearer 
+
+
+###API-6 DELETE 
+DELETE http://localhost:3000/districts/322/
+Authorization: Bearer
+
+
+###API-7 PUT 
+PUT http://localhost:3000/districts/322/
+Authorization: Bearer
+Content-Type: application/json
+
+{
+    "districtName": "Nadia",
+    "stateId": 3,
+    "cases": 9628,
+    "cured": 6524,
+    "active": 300,
+    "deaths": 104
+}
+
+###API-8 GET 
+GET http://localhost:3000/states/8/stats/
+Authorization: Bearer 

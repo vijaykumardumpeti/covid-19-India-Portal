@@ -68,7 +68,7 @@ app.post("/login/", async (request, response) => {
   try {
     let { username, password } = request.body;
 
-    let userDetailsQuery = `SELECT * FROM  user WHERE username = ${username};`;
+    let userDetailsQuery = `SELECT * FROM  user WHERE username = '${username}';`;
     let user = await db.get(userDetailsQuery);
     let isPasswordMatch = await bcrypt.compare(password, user.password);
 

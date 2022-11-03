@@ -106,6 +106,7 @@ let authenticateToken = (request, response, next) => {
   } else {
     jwt.verify(jwtToken, "vijay", async (error, payload) => {
       if (error) {
+        response.status(401);
         response.send("Invalid JWT Token");
       } else {
         next();

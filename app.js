@@ -211,7 +211,7 @@ app.delete(
     let { username } = request;
     let deleteQuery = `DELETE FROM district WHERE district_id = ${districtId};`;
     let statesArray = await db.run(deleteQuery);
-    response.send("District removed");
+    response.send("District Removed");
   }
 );
 //API-7 PUT
@@ -270,3 +270,4 @@ app.get(
     response.send(s);
   }
 );
+

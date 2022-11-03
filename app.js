@@ -102,7 +102,7 @@ let authenticateToken = (request, response, next) => {
   }
   if (jwtToken === undefined) {
     response.status(401);
-    response.send("Token not defined");
+    response.send("Invalid JWT Token");
   } else {
     jwt.verify(jwtToken, "vijay", async (error, payload) => {
       if (error) {

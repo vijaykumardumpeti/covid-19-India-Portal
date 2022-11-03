@@ -1,6 +1,7 @@
 let express = require("express");
 
 let app = express();
+module.exports = app;
 let path = require("path");
 
 let sqlite = require("sqlite");
@@ -93,7 +94,7 @@ app.post("/login/", async (request, response) => {
 //authenticateToken
 
 let authenticateToken = (request, response, next) => {
-  let authHeader = request.header["authentication"];
+  let authHeader = request.headers["authorization"];
 
   let jwtToken;
   if (authHeader !== undefined) {
@@ -101,7 +102,7 @@ let authenticateToken = (request, response, next) => {
   }
   if (jwtToken === undefined) {
     response.status(401);
-    response.send("Invalid JWT Token");
+    response.send("Token not defined");
   } else {
     jwt.verify(jwtToken, "vijay", async (error, payload) => {
       if (error) {
@@ -119,7 +120,17 @@ app.get("/states/", authenticateToken, async (request, response) => {
   let { username } = request;
   let getStatesQuery = `SELECT * FROM state;`;
   let statesArray = await db.all(getStatesQuery);
-  response.send(statesArray);
+
+  let s = statesArray.map((object) => {
+    let w = {
+      stateId: object.state_id,
+      stateName: object.state_name,
+      population: object.population,
+    };
+    return w;
+  });
+
+  response.send(s);
 });
 
 ////API-3 GET
@@ -127,8 +138,13 @@ app.get("/states/:stateId/", authenticateToken, async (request, response) => {
   let { stateId } = request.params;
   let { username } = request;
   let getStatesQuery = `SELECT * FROM state WHERE state_id = ${stateId};`;
-  let statesArray = await db.get(getStatesQuery);
-  response.send(statesArray);
+  let object = await db.get(getStatesQuery);
+  let w = {
+    stateId: object.state_id,
+    stateName: object.state_name,
+    population: object.population,
+  };
+  response.send(w);
 });
 ////API-4 POST
 
@@ -143,7 +159,7 @@ app.post("/districts/", authenticateToken, async (request, response) => {
                     '${cases}',
                     '${cured}',
                     '${active}',
-                    '${deaths}',
+                    '${deaths}'
                 );`;
   await db.run(createDistrictQuery);
   response.send("District Successfully Added");
@@ -154,19 +170,34 @@ app.get(
   "/districts/:districtId/",
   authenticateToken,
   async (request, response) => {
-    let { districtId } = request.params;
-    let { username } = request;
+    try {
+      let { districtId } = request.params;
+      let { username } = request;
 
-    let getStatesQuery = `
+      let getStatesQuery = `
                 SELECT 
                 * 
                 FROM
-                    state
+                    district
                 WHERE 
                     district_id = ${districtId};`;
 
-    let districtsArray = await db.get(getStatesQuery);
-    response.send(districtsArray);
+      let object = await db.get(getStatesQuery);
+
+      let w = {
+        districtId: object.district_id,
+        districtName: object.district_name,
+        stateId: object.state_id,
+        cases: object.cases,
+        cured: object.cured,
+        active: object.active,
+        deaths: object.deaths,
+      };
+
+      response.send(w);
+    } catch (e) {
+      console.log(`DB Error: ${e.message}`);
+    }
   }
 );
 
@@ -179,7 +210,7 @@ app.delete(
     let { username } = request;
     let deleteQuery = `DELETE FROM district WHERE district_id = ${districtId};`;
     let statesArray = await db.run(deleteQuery);
-    response.send(statesArray);
+    response.send("District removed");
   }
 );
 //API-7 PUT
@@ -199,7 +230,7 @@ app.put(
             cases = '${cases}', 
             cured = '${cured}', 
             active = '${active}', 
-            deaths = '${deaths}',
+            deaths = '${deaths}'
         WHERE 
             district_id = ${districtId};`;
 
@@ -216,7 +247,7 @@ app.get(
     let { stateId } = request.params;
     let getStatsQuery = `
         SELECT 
-            SUM(cases),
+            SUM(cases) as totalCases,
             SUM(cured),
             SUM(active),
             SUM(deaths)
@@ -225,7 +256,16 @@ app.get(
         WHERE 
             state_id = ${stateId};      `;
 
-    let stateStatObject = await db.get(getStatsQuery);
-    response.send(stateStatObject);
+    let object = await db.get(getStatsQuery);
+
+    object["SUM(cases)"];
+    let s = {
+      totalCases: object["SUM(cases)"],
+      totalCured: object["SUM(cured)"],
+      totalActive: object["SUM(active)"],
+      totalDeaths: object["SUM(deaths)"],
+    };
+
+    response.send(s);
   }
 );

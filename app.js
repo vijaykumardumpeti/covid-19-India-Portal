@@ -71,19 +71,19 @@ app.post("/login/", async (request, response) => {
 
     let userDetailsQuery = `SELECT * FROM  user WHERE username = '${username}';`;
     let user = await db.get(userDetailsQuery);
-    let isPasswordMatch = await bcrypt.compare(password, user.password);
 
     if (user === undefined) {
       response.status(400);
       response.send("Invalid user");
     } else {
-      if (isPasswordMatch === false) {
-        response.status(400);
-        response.status("Invalid password");
-      } else {
+      let isPasswordMatch = await bcrypt.compare(password, user.password);
+      if (isPasswordMatch === true) {
         let payload = { username: username };
         let jwtToken = jwt.sign(payload, "vijay");
         response.send({ jwtToken });
+      } else {
+        response.status(400);
+        response.status("Invalid password");
       }
     }
   } catch (e) {
@@ -270,4 +270,5 @@ app.get(
     response.send(s);
   }
 );
+
 

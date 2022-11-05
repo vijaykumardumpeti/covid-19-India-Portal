@@ -248,7 +248,7 @@ app.get(
     let { stateId } = request.params;
     let getStatsQuery = `
         SELECT 
-            SUM(cases) as totalCases,
+            SUM(cases),
             SUM(cured),
             SUM(active),
             SUM(deaths)
